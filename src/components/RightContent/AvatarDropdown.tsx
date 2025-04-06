@@ -1,13 +1,12 @@
-import { outLogin } from '@/services/ant-design-pro/api';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
-import { history, useModel } from '@umijs/max';
+import { history } from '@umijs/max';
 import { Spin } from 'antd';
 import { createStyles } from 'antd-style';
 import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useCallback } from 'react';
-import { flushSync } from 'react-dom';
 import HeaderDropdown from '../HeaderDropdown';
+import useUserStore from '@/stores/user';
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -15,9 +14,8 @@ export type GlobalHeaderRightProps = {
 };
 
 export const AvatarName = () => {
-  const { initialState } = useModel('@@initialState');
-  const { currentUser } = initialState || {};
-  return <span className="anticon">{currentUser?.name}</span>;
+  const userInfo = useUserStore((state) => state.userInfo);
+  return <span className="anticon">{userInfo?.name}</span>;
 };
 
 const useStyles = createStyles(({ token }) => {
@@ -39,11 +37,13 @@ const useStyles = createStyles(({ token }) => {
 });
 
 export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, children }) => {
+  const { clearUser } = useUserStore();
+
   /**
    * 退出登录，并且将当前的 url 保存
    */
   const loginOut = async () => {
-    await outLogin();
+    clearUser();
     const { search, pathname } = window.location;
     const urlParams = new URL(window.location.href).searchParams;
     /** 此方法会跳转到 redirect 参数所在的位置 */
@@ -60,22 +60,16 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
   };
   const { styles } = useStyles();
 
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const userInfo = useUserStore((state) => state.userInfo);
 
-  const onMenuClick = useCallback(
-    (event: MenuInfo) => {
-      const { key } = event;
-      if (key === 'logout') {
-        flushSync(() => {
-          setInitialState((s) => ({ ...s, currentUser: undefined }));
-        });
-        loginOut();
-        return;
-      }
-      history.push(`/account/${key}`);
-    },
-    [setInitialState],
-  );
+  const onMenuClick = useCallback((event: MenuInfo) => {
+    const { key } = event;
+    if (key === 'logout') {
+      loginOut();
+      return;
+    }
+    history.push(`/account/${key}`);
+  }, []);
 
   const loading = (
     <span className={styles.action}>
@@ -89,13 +83,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
     </span>
   );
 
-  if (!initialState) {
-    return loading;
-  }
-
-  const { currentUser } = initialState;
-
-  if (!currentUser || !currentUser.name) {
+  if (!userInfo) {
     return loading;
   }
 

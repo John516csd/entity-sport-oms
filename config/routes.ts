@@ -36,20 +36,14 @@ export default [
     routes: [
       {
         path: '/admin',
-        redirect: '/admin/sub-page',
+        redirect: '/admin/users',
       },
       {
-        path: '/admin/sub-page',
-        name: 'sub-page',
-        component: './Admin',
+        path: '/admin/users',
+        name: 'users',
+        component: './User/List',
       },
     ],
-  },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
   },
   {
     path: '/',

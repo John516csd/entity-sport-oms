@@ -1,6 +1,7 @@
 ﻿import type { RequestOptions } from '@@/plugin-request/request';
 import type { RequestConfig } from '@umijs/max';
 import { message, notification } from 'antd';
+import { getAuthHeader } from '@/utils/auth';
 
 // 错误处理方案： 错误类型
 enum ErrorShowType {
@@ -89,8 +90,9 @@ export const errorConfig: RequestConfig = {
   requestInterceptors: [
     (config: RequestOptions) => {
       // 拦截请求配置，进行个性化处理。
-      const url = config?.url?.concat('?token = 123');
-      return { ...config, url };
+      const authHeader = getAuthHeader();
+      const headers = { ...config.headers, ...authHeader };
+      return { ...config, headers };
     },
   ],
 

@@ -1,12 +1,14 @@
 import { Footer } from '@/components';
-import { login } from '@/services/ant-design-pro/api';
+import { login } from '@/services/user';
+import useUserStore from '@/stores/user';
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { LoginForm, ProFormText, ProFormCheckbox } from '@ant-design/pro-components';
-import { FormattedMessage, history, useIntl, useModel } from '@umijs/max';
+import { LoginForm, ProFormText } from '@ant-design/pro-components';
+import { FormattedMessage, history, useIntl } from '@umijs/max';
 import { Alert, message } from 'antd';
-import React, { useState } from 'react';
-import { flushSync } from 'react-dom';
+import React, { useState, useEffect } from 'react';
 import { createStyles } from 'antd-style';
+import { getToken } from '@/utils/auth';
+import type { LoginParams } from '@/services/user';
 
 const useStyles = createStyles(() => {
   return {
@@ -60,48 +62,49 @@ const LoginMessage: React.FC<{
 };
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const [loginError, setLoginError] = useState(false);
+  const { setToken, setUserInfo } = useUserStore();
   const { styles } = useStyles();
   const intl = useIntl();
 
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      flushSync(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
-      });
+  // 检查登录状态，如果已登录则重定向到 dashboard
+  useEffect(() => {
+    const token = getToken();
+    if (token) {
+      history.replace('/');
     }
-  };
+  }, []);
 
-  const handleSubmit = async (values: API.LoginParams) => {
+  const handleSubmit = async (values: LoginParams) => {
     try {
-      const msg = await login({ ...values, type: 'account' });
-      if (msg.status === 'ok') {
+      const response = await login(values);
+      if (response.code === 200 && response.data) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
           defaultMessage: '登录成功！',
         });
         message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
+
+        // 保存用户数据到 store
+        setToken(response.data.access_token);
+        setUserInfo(response.data);
+
+        setLoginError(false);
         const urlParams = new URL(window.location.href).searchParams;
         history.push(urlParams.get('redirect') || '/');
         return;
       }
-      setUserLoginState(msg);
+      message.error(response.message || '登录失败');
+      setLoginError(true);
     } catch (error) {
       const defaultLoginFailureMessage = intl.formatMessage({
         id: 'pages.login.failure',
         defaultMessage: '登录失败，请重试！',
       });
       message.error(defaultLoginFailureMessage);
+      setLoginError(true);
     }
   };
-
-  const { status } = userLoginState;
 
   return (
     <div className={styles.container}>
@@ -113,7 +116,7 @@ const Login: React.FC = () => {
             <div className={styles.subtitle}>运营管理系统</div>
           </div>
 
-          {status === 'error' && (
+          {loginError && (
             <LoginMessage
               content={intl.formatMessage({
                 id: 'pages.login.accountLogin.errorMessage',
@@ -132,26 +135,26 @@ const Login: React.FC = () => {
               },
             }}
             onFinish={async (values) => {
-              await handleSubmit(values as API.LoginParams);
+              await handleSubmit(values as LoginParams);
             }}
           >
             <ProFormText
-              name="username"
+              name="phone"
               fieldProps={{
                 size: 'large',
                 prefix: <UserOutlined />,
               }}
               placeholder={intl.formatMessage({
-                id: 'pages.login.username.placeholder',
-                defaultMessage: '请输入用户名',
+                id: 'pages.login.phone.placeholder',
+                defaultMessage: '请输入手机号',
               })}
               rules={[
                 {
                   required: true,
                   message: (
                     <FormattedMessage
-                      id="pages.login.username.required"
-                      defaultMessage="请输入用户名!"
+                      id="pages.login.phone.required"
+                      defaultMessage="请输入手机号!"
                     />
                   ),
                 },
@@ -179,14 +182,6 @@ const Login: React.FC = () => {
                 },
               ]}
             />
-            <div style={{ marginBottom: 24 }}>
-              <ProFormCheckbox noStyle name="autoLogin">
-                <FormattedMessage id="pages.login.rememberMe" defaultMessage="自动登录" />
-              </ProFormCheckbox>
-              <a style={{ float: 'right' }}>
-                <FormattedMessage id="pages.login.forgotPassword" defaultMessage="忘记密码" />
-              </a>
-            </div>
           </LoginForm>
         </div>
       </div>
