@@ -1,4 +1,5 @@
 import { request } from '@umijs/max';
+import { BaseResponse } from './typings';
 
 export interface LoginParams {
   phone: string;
@@ -7,16 +8,8 @@ export interface LoginParams {
 
 export interface LoginResult {
   access_token: string;
-  is_admin: boolean;
   token_type: string;
-  user_id: string;
-}
-
-export interface BaseResponse<T = any> {
-  code: number;
-  message: string;
-  data?: T;
-  request_id?: string;
+  user: User;
 }
 
 export interface UserListParams {
@@ -27,11 +20,14 @@ export interface UserListParams {
 
 export interface User {
   id: number;
-  name: string | null;
-  phone: string | null;
-  gender: number | null;
+  name: string;
+  phone: string;
+  gender: number;
   is_admin: boolean;
   created_at: string;
+  avatar_url: string;
+  unionid: string;
+  openid: string;
 }
 
 export interface UserListResult {

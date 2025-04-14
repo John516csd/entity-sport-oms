@@ -78,6 +78,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: LoginParams) => {
     try {
       const response = await login(values);
+      console.log('🚀 ~ handleSubmit ~ response:', response);
       if (response.code === 200 && response.data) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
@@ -87,7 +88,11 @@ const Login: React.FC = () => {
 
         // 保存用户数据到 store
         setToken(response.data.access_token);
-        setUserInfo(response.data);
+        setUserInfo({
+          ...response.data.user,
+          access_token: response.data.access_token,
+          token_type: response.data.token_type,
+        });
 
         setLoginError(false);
         const urlParams = new URL(window.location.href).searchParams;

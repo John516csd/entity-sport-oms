@@ -5,7 +5,6 @@ type UserInfo = {
   access_token: string;
   is_admin: boolean;
   token_type: string;
-  user_id: string;
   name?: string;
   phone?: string;
   avatar_url?: string;
