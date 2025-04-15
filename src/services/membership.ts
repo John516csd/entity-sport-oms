@@ -5,15 +5,17 @@ import type { BaseResponse } from './typings';
 /** 会员卡信息 */
 export type Membership = {
   id: string | number;
+  uid?: string | number; // 兼容旧代码
   user_id: string | number; // 用户ID
-  type_id: string | number; // 会员卡类型ID (API实际返回的是type_id而不是membership_type_id)
-  membership_type_id?: string | number; // 兼容旧代码的字段名
-  membership_type?: MembershipType; // 会员卡类型详情
+  user_name: string; // 用户名称
+  user_uid: string; // 用户唯一标识
+  user_phone: string; // 用户手机号
+  type_id: string | number; // 会员卡类型ID
+  type_name: string; // 会员卡类型名称
+  membership_type?: MembershipType; // 会员卡类型详情（兼容旧代码）
   remaining_sessions: number; // 剩余课时
-  purchased_at: string; // 购买日期 (API实际返回的是purchased_at而不是start_date)
-  expired_at: string; // 过期日期 (API实际返回的是expired_at而不是end_date)
-  start_date?: string; // 兼容旧代码的字段名
-  end_date?: string; // 兼容旧代码的字段名
+  purchased_at: string; // 购买日期
+  expired_at: string; // 过期日期
   status: 'active' | 'expired' | 'cancelled' | 'revoked'; // 状态：激活、过期、取消、回收
   revoke_reason?: string; // 回收原因
   created_at?: string;
@@ -34,8 +36,15 @@ export type MembershipListParams = {
   skip?: number;
   limit?: number;
   user_id?: string | number; // 根据用户ID查询
+  type_id?: string; // 根据会员卡类型ID查询 - 确保是字符串类型
   status?: string; // 状态筛选
   revoke_reason?: string; // 根据回收原因查询
+  remaining_sessions_min?: number; // 最小剩余课时数
+  remaining_sessions_max?: number; // 最大剩余课时数
+  purchased_at_start?: string; // 开始日期范围-开始
+  purchased_at_end?: string; // 开始日期范围-结束
+  expired_at_start?: string; // 结束日期范围-开始
+  expired_at_end?: string; // 结束日期范围-结束
 };
 
 /** 赠送会员卡参数 */

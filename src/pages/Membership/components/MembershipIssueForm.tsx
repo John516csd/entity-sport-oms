@@ -1,6 +1,6 @@
 import { MembershipIssueParams } from '@/services/membership';
 import { getMembershipTypes, MembershipType } from '@/services/membershipType';
-import { getUserOptions, User } from '@/services/user';
+import { getUserOptions, User, UserListResult } from '@/services/user';
 import {
   ModalForm,
   ProFormDatePicker,
@@ -56,6 +56,7 @@ const MembershipIssueForm: React.FC<MembershipIssueFormProps> = ({
       formattedValues.purchased_at = dayjs(formattedValues.purchased_at).format('YYYY-MM-DD');
     }
 
+    console.log('Submitting membership issue form with values:', formattedValues);
     return onFinish(formattedValues as MembershipIssueParams);
   };
 
@@ -82,7 +83,10 @@ const MembershipIssueForm: React.FC<MembershipIssueFormProps> = ({
           try {
             const res = await getUserOptions(params.keyWords);
             if (res.code === 200 && res.data) {
-              const users = Array.isArray(res.data) ? res.data : [];
+              // The response is now in UserListResult format
+              const userData = res.data as UserListResult;
+              const users = userData.items || [];
+
               return users.map((user: User) => ({
                 label: `${user.name} (${user.phone})`,
                 value: user.id,
