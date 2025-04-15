@@ -1,6 +1,6 @@
 import { MembershipIssueParams } from '@/services/membership';
 import { getMembershipTypes, MembershipType } from '@/services/membershipType';
-import { getUserOptions } from '@/services/user';
+import { getUserOptions, User } from '@/services/user';
 import {
   ModalForm,
   ProFormDatePicker,
@@ -82,8 +82,8 @@ const MembershipIssueForm: React.FC<MembershipIssueFormProps> = ({
           try {
             const res = await getUserOptions(params.keyWords);
             if (res.code === 200 && res.data) {
-              const users = Array.isArray(res.data) ? res.data : res.data.items || [];
-              return users.map((user) => ({
+              const users = Array.isArray(res.data) ? res.data : [];
+              return users.map((user: User) => ({
                 label: `${user.name} (${user.phone})`,
                 value: user.id,
               }));
