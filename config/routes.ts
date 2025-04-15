@@ -43,6 +43,21 @@ export default [
         name: 'users',
         component: './User/List',
       },
+      {
+        path: '/admin/coaches',
+        name: 'coaches',
+        component: './Coach/List',
+      },
+      {
+        path: '/admin/membership-types',
+        name: 'membership-types',
+        component: './MembershipType/List',
+      },
+      {
+        path: '/admin/memberships',
+        name: 'memberships',
+        component: './Membership/List',
+      },
     ],
   },
   {

@@ -57,3 +57,14 @@ export async function getUsers(params?: UserListParams) {
     },
   });
 }
+
+/** 获取用户选项列表 (用于下拉选择) GET /api/admin/users/options */
+export async function getUserOptions(search?: string) {
+  return request<BaseResponse<User[]>>('/api/admin/users', {
+    method: 'GET',
+    params: {
+      limit: 100, // 获取较多记录用于选择
+      search,
+    },
+  });
+}
