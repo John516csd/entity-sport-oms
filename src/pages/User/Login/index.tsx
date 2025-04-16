@@ -78,7 +78,6 @@ const Login: React.FC = () => {
   const handleSubmit = async (values: LoginParams) => {
     try {
       const response = await login(values);
-      console.log('🚀 ~ handleSubmit ~ response:', response);
       if (response.code === 200 && response.data) {
         const defaultLoginSuccessMessage = intl.formatMessage({
           id: 'pages.login.success',
@@ -96,7 +95,9 @@ const Login: React.FC = () => {
 
         setLoginError(false);
         const urlParams = new URL(window.location.href).searchParams;
-        history.push(urlParams.get('redirect') || '/');
+        const redirectPath = urlParams.get('redirect');
+        // 如果有指定的重定向路径就用指定的，否则直接跳转到用户列表页面
+        history.push(redirectPath || '/admin/users');
         return;
       }
       message.error(response.message || '登录失败');
