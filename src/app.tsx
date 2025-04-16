@@ -10,7 +10,6 @@ import { getToken } from '@/utils/auth';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
-const defaultRedirectPath = '/';
 
 /**
  * @see  https://umijs.org/zh-CN/plugins/plugin-initial-state
@@ -42,7 +41,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       if (token) {
         // 如果已登录且在登录页，重定向到首页
         if (location.pathname === loginPath) {
-          history.push(defaultRedirectPath);
+          history.push('/');
         }
       } else {
         // 如果没有登录且不在登录页，重定向到登录页

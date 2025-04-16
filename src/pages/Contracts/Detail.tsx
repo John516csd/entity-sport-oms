@@ -1,3 +1,4 @@
+import { SERVER_URL } from '@/constants/config';
 import { Contract, deleteContract, getContract } from '@/services/contracts';
 import { ArrowLeftOutlined, DeleteOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
@@ -95,7 +96,7 @@ const ContractDetail: React.FC = () => {
     if (path.startsWith('data:')) {
       return path;
     }
-    return `http://47.106.81.130${path}`;
+    return `${SERVER_URL}${path}`;
   };
 
   if (loading || deleteLoading) {

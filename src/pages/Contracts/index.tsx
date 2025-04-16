@@ -1,3 +1,4 @@
+import { SERVER_URL } from '@/constants/config';
 import { Contract, deleteContract, getAllContracts, getUserContracts } from '@/services/contracts';
 import { DeleteOutlined, EyeOutlined, PlusOutlined, UserOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-components';
@@ -159,7 +160,7 @@ const Contracts: React.FC = () => {
     if (path.startsWith('data:')) {
       return path;
     }
-    return `http://47.106.81.130${path}`;
+    return `${SERVER_URL}${path}`;
   };
 
   const handlePageChange = (page: number) => {
