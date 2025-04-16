@@ -58,6 +58,36 @@ export default [
         name: 'memberships',
         component: './Membership/List',
       },
+      {
+        path: '/admin/appointments',
+        name: 'appointments',
+        component: './Appointment/List',
+      },
+      {
+        path: '/admin/settings',
+        name: 'settings',
+        component: './Settings',
+      },
+      {
+        path: '/admin/logs',
+        name: 'logs',
+        component: './Logs',
+      },
+      {
+        path: '/admin/contracts',
+        name: 'contracts',
+        component: './Contracts',
+      },
+      {
+        path: '/admin/contracts/create',
+        component: './Contracts/Create',
+        hideInMenu: true,
+      },
+      {
+        path: '/admin/contracts/detail/:contractId',
+        component: './Contracts/Detail',
+        hideInMenu: true,
+      },
     ],
   },
   {

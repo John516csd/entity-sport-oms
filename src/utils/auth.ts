@@ -14,7 +14,7 @@ export function getToken(): string | null {
 export function getUserId(): string | null {
   try {
     const userState = JSON.parse(localStorage.getItem(TOKEN_KEY) || '{}');
-    return userState.state?.userInfo?.user_id || null;
+    return userState.state?.userInfo?.uid || null;
   } catch (error) {
     return null;
   }
