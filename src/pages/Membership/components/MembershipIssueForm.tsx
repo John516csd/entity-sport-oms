@@ -75,7 +75,7 @@ const MembershipIssueForm: React.FC<MembershipIssueFormProps> = ({
       onFinish={handleFinish}
     >
       <ProFormSelect
-        name="user_id"
+        name="uid"
         label="选择用户"
         placeholder="请输入用户姓名或手机号搜索"
         showSearch
@@ -83,13 +83,13 @@ const MembershipIssueForm: React.FC<MembershipIssueFormProps> = ({
           try {
             const res = await getUserOptions(params.keyWords);
             if (res.code === 200 && res.data) {
-              // The response is now in UserListResult format
+              // 解析API返回的数据格式
               const userData = res.data as UserListResult;
               const users = userData.items || [];
 
               return users.map((user: User) => ({
                 label: `${user.name} (${user.phone})`,
-                value: user.id,
+                value: user.uid || user.id,
               }));
             }
             return [];
@@ -107,12 +107,12 @@ const MembershipIssueForm: React.FC<MembershipIssueFormProps> = ({
         rules={[{ required: true, message: '请选择用户' }]}
       />
 
-      <ProFormDependency name={['user_id']}>
-        {({ user_id }) => {
-          return user_id ? (
+      <ProFormDependency name={['uid']}>
+        {({ uid }) => {
+          return uid ? (
             <div style={{ marginBottom: 24 }}>
               <p style={{ margin: 0, color: '#666' }}>
-                已选择用户ID: <span style={{ fontWeight: 'bold' }}>{user_id}</span>
+                已选择用户ID: <span style={{ fontWeight: 'bold' }}>{uid}</span>
               </p>
             </div>
           ) : null;

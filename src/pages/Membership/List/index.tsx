@@ -127,7 +127,7 @@ const MembershipList: React.FC = () => {
       dataIndex: 'user_name',
       ellipsis: true,
       render: (text, record) => {
-        return text || `用户 ${record.user_id}`;
+        return text || `用户 ${record.uid}`;
       },
     },
     {
@@ -374,7 +374,7 @@ const MembershipList: React.FC = () => {
           const {
             current,
             pageSize,
-            user_id,
+            uid,
             status,
             type_id,
             remaining_sessions_min,
@@ -391,7 +391,7 @@ const MembershipList: React.FC = () => {
           };
 
           // Safely add parameters with validation
-          if (user_id) requestParams.user_id = user_id;
+          if (uid) requestParams.uid = uid;
 
           if (status && typeof status === 'string') {
             // Validate that status is one of the allowed values
