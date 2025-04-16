@@ -2,6 +2,7 @@
 import type { RequestConfig } from '@umijs/max';
 import { message, notification } from 'antd';
 import { getAuthHeader } from '@/utils/auth';
+import { API_BASE_URL } from '@/constants/config';
 
 // 错误处理方案： 错误类型
 enum ErrorShowType {
@@ -26,6 +27,8 @@ interface ResponseStructure {
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const errorConfig: RequestConfig = {
+  baseURL: API_BASE_URL,
+
   // 错误处理： umi@3 的错误处理方案。
   errorConfig: {
     // 错误抛出
