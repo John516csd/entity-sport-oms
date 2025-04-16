@@ -48,10 +48,13 @@
   "dependencies": {
     "@ant-design/icons": "^4.8.1",
     "@ant-design/pro-components": "^2.6.48",
+    "@ant-design/pro-table": "^3.19.0",
     "@umijs/route-utils": "^2.2.2",
+    "ahooks": "^3.8.4",
     "antd": "^5.13.2",
     "antd-style": "^3.6.1",
     "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
     "lodash": "^4.17.21",
     "moment": "^2.30.1",
     "omit.js": "^2.0.2",

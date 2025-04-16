@@ -1,9 +1,7 @@
 export default {
-  'menu.welcome': '欢迎',
   'menu.more-blocks': '更多区块',
   'menu.home': '首页',
   'menu.admin': '管理页',
-  'menu.admin.sub-page': '二级管理页',
   'menu.admin.users': '用户管理',
   'menu.admin.coaches': '教练管理',
   'menu.admin.membership-types': '会员卡管理',
