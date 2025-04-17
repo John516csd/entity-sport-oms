@@ -1,13 +1,14 @@
 /**
  * @see https://umijs.org/docs/max/access#access
  * */
-import useUserStore from '@/stores/user';
+import { User } from './services/user';
 
-export default function access() {
-  const userInfo = useUserStore.getState().userInfo;
-  console.log('🚀 ~ access ~ userInfo:', userInfo);
+export default function access(initialState: { currentUser?: User }) {
+  const { currentUser } = initialState || {};
+  console.log('🚀 ~ access check ~ userInfo:', currentUser);
 
   return {
-    canAdmin: userInfo?.is_admin === true,
+    canAdmin: Boolean(currentUser?.is_admin),
+    canUser: !!currentUser,
   };
 }

@@ -25,7 +25,9 @@ const useUserStore = create<UserState>()(
       token: null,
       userInfo: null,
       setToken: (token: string) => set({ token }),
-      setUserInfo: (userInfo: UserInfo) => set({ userInfo }),
+      setUserInfo: (userInfo: UserInfo) => {
+        set({ userInfo });
+      },
       clearUser: () => set({ token: null, userInfo: null }),
     }),
     {

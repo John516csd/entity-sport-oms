@@ -8,6 +8,7 @@ import { Alert, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { createStyles } from 'antd-style';
 import { getToken } from '@/utils/auth';
+import { useModel } from '@@/plugin-model';
 import type { LoginParams } from '@/services/user';
 
 const useStyles = createStyles(() => {
@@ -66,6 +67,7 @@ const Login: React.FC = () => {
   const { setToken, setUserInfo } = useUserStore();
   const { styles } = useStyles();
   const intl = useIntl();
+  const { setInitialState } = useModel('@@initialState');
 
   // 检查登录状态，如果已登录则重定向到 dashboard
   useEffect(() => {
@@ -87,17 +89,28 @@ const Login: React.FC = () => {
 
         // 保存用户数据到 store
         setToken(response.data.access_token);
-        setUserInfo({
+        const userInfo = {
           ...response.data.user,
           access_token: response.data.access_token,
           token_type: response.data.token_type,
-        });
+        };
+        setUserInfo(userInfo);
+
+        // ✅ 更新 initialState
+        await setInitialState((s) => ({
+          ...s,
+          currentUser: userInfo,
+        }));
 
         setLoginError(false);
         const urlParams = new URL(window.location.href).searchParams;
         const redirectPath = urlParams.get('redirect');
-        // 如果有指定的重定向路径就用指定的，否则直接跳转到用户列表页面
-        history.push(redirectPath || '/admin/users');
+
+        // 使用 setTimeout 确保 store 更新后再跳转
+        setTimeout(async () => {
+          history.push(redirectPath || '/admin/users');
+        }, 0);
+
         return;
       }
       message.error(response.message || '登录失败');
