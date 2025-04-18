@@ -7,6 +7,8 @@ import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import React from 'react';
 import { getToken } from '@/utils/auth';
+import useUserStore from '@/stores/user';
+import type { User } from '@/services/user';
 
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
@@ -16,7 +18,18 @@ const loginPath = '/user/login';
  * */
 export async function getInitialState(): Promise<{
   settings?: Partial<LayoutSettings>;
+  currentUser?: User;
 }> {
+  // 直接从 zustand store 获取用户信息
+  const { token, userInfo } = useUserStore.getState();
+
+  if (token && userInfo) {
+    return {
+      currentUser: userInfo,
+      settings: defaultSettings as Partial<LayoutSettings>,
+    };
+  }
+
   return {
     settings: defaultSettings as Partial<LayoutSettings>,
   };

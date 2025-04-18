@@ -1,14 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { User } from '@/services/user';
 
-type UserInfo = {
+type UserInfo = User & {
   access_token: string;
-  is_admin: boolean;
   token_type: string;
-  name?: string;
-  phone?: string;
-  avatar_url?: string;
-  gender?: number;
 };
 
 interface UserState {
