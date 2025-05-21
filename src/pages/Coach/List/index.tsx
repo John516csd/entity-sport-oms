@@ -6,6 +6,7 @@ import { ProTable } from '@ant-design/pro-components';
 import { Button, Popconfirm, message } from 'antd';
 import { useRef, useState } from 'react';
 import CoachForm from '../components/CoachForm';
+import { Avatar } from 'antd';
 
 const CoachList: React.FC = () => {
   const actionRef = useRef<ActionType>();
@@ -90,6 +91,15 @@ const CoachList: React.FC = () => {
       hideInSearch: true,
     },
     {
+      title: '头像',
+      dataIndex: 'avatar_url',
+      hideInSearch: true,
+      render: (_, record) =>
+        record.avatar_url ? (
+          <Avatar src={`https://www.anteti.cn${record.avatar_url}`} size="large" />
+        ) : null,
+    },
+    {
       title: '创建时间',
       dataIndex: 'created_at',
       valueType: 'dateTime',
@@ -106,10 +116,18 @@ const CoachList: React.FC = () => {
         </a>,
         <Popconfirm
           key="delete"
-          title="确定要删除这条记录吗?"
+          title={
+            <div>
+              <p style={{ color: '#ff4d4f', fontWeight: 'bold' }}>⚠️ 风险操作警告</p>
+              <p>删除教练将同时删除相关的课程安排和学员关联，此操作无法撤销！</p>
+              <p>确定要删除教练 &quot;{record.name}&quot; 吗?</p>
+            </div>
+          }
           onConfirm={() => handleDelete(record.id)}
-          okText="确定"
+          okText="确定删除"
           cancelText="取消"
+          okButtonProps={{ danger: true }}
+          icon={<span style={{ color: '#ff4d4f' }}>⚠️</span>}
         >
           <a style={{ color: 'red' }}>删除</a>
         </Popconfirm>,
