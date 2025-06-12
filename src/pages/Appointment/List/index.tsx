@@ -51,9 +51,10 @@ const AppointmentList: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const result = await getUserList({ limit: 100 });
-      if (result.code === 200 && result.data) {
+      if ((result.code === 200 || result.success === true) && result.data) {
         const map: Record<string, User> = {};
-        result.data.items?.forEach((user) => {
+        const users = result.data.users || result.data.items || [];
+        users.forEach((user) => {
           if (user.uid) {
             map[user.uid] = user;
           }
@@ -117,7 +118,7 @@ const AppointmentList: React.FC = () => {
         const coach = coachMap[record.coach_id];
         if (!coach) return record.coach_id;
 
-        return <Tooltip title={`专长: ${coach.specialization}`}>{coach.name}</Tooltip>;
+        return <Tooltip title={`专长: ${coach.specialty}`}>{coach.name}</Tooltip>;
       },
     },
     {

@@ -7,9 +7,9 @@ export interface Coach {
   name: string;
   phone: string;
   avatar_url?: string;
-  status: 'active' | 'inactive';
+  status?: 'active' | 'inactive';
   specialty: string;
-  created_at: string;
+  created_at?: string;
 }
 
 /** 教练列表查询参数 */
@@ -24,6 +24,9 @@ export interface CoachListParams {
 export interface CoachListResult {
   total: number;
   coaches: Coach[];
+  page?: number;
+  limit?: number;
+  skip?: number;
 }
 
 /** 获取教练列表 GET /api/admin/coaches */
@@ -50,17 +53,15 @@ export type CoachFormData = {
 /** 创建教练 POST /api/admin/coaches */
 export async function createCoach(data: CoachFormData) {
   const formData = new FormData();
+  formData.append('name', data.name);
+  formData.append('phone', data.phone);
+  formData.append('specialty', data.specialty);
   if (data.avatar_image) {
     formData.append('avatar_image', data.avatar_image);
   }
 
   return request<BaseResponse<Coach>>('/api/admin/coaches', {
     method: 'POST',
-    params: {
-      name: data.name,
-      phone: data.phone,
-      specialty: data.specialty,
-    },
     requestType: 'form',
     data: formData,
   });
@@ -69,17 +70,15 @@ export async function createCoach(data: CoachFormData) {
 /** 更新教练 PUT /api/admin/coaches/:id */
 export async function updateCoach(id: string, data: CoachFormData) {
   const formData = new FormData();
+  formData.append('name', data.name);
+  formData.append('phone', data.phone);
+  formData.append('specialty', data.specialty);
   if (data.avatar_image) {
     formData.append('avatar_image', data.avatar_image);
   }
 
   return request<BaseResponse<Coach>>(`/api/admin/coaches/${id}`, {
     method: 'PUT',
-    params: {
-      name: data.name,
-      phone: data.phone,
-      specialty: data.specialty,
-    },
     requestType: 'form',
     data: formData,
   });

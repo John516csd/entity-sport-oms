@@ -77,7 +77,8 @@ const UserList: React.FC = () => {
           search: searchTerms.length > 0 ? searchTerms.join(' ') : undefined,
         });
 
-        let filteredData = response.data?.items || [];
+        // 适配实际API响应格式
+        let filteredData = response.data?.users || response.data?.items || [];
 
         // 前端过滤管理员状态
         if (is_admin !== undefined) {
@@ -87,10 +88,10 @@ const UserList: React.FC = () => {
 
         return {
           data: filteredData,
-          success: response.code === 200,
-          total: filteredData.length,
-          current: response.data?.page || 1,
-          pageSize: response.data?.limit || 20,
+          success: response.success === true || response.code === 200,
+          total: response.data?.total || filteredData.length,
+          current: response.data?.page || current || 1,
+          pageSize: response.data?.limit || pageSize || 20,
         };
       }}
       rowKey="id"

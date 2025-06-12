@@ -142,25 +142,50 @@ const MembershipTypeList: React.FC = () => {
           const searchTerms = [];
           if (name) searchTerms.push(name);
 
-          const response = await getMembershipTypes({
-            skip: ((current || 1) - 1) * (pageSize || 20),
-            limit: pageSize || 20,
-            search: searchTerms.length > 0 ? searchTerms.join(' ') : undefined,
-          });
+          try {
+            const response = await getMembershipTypes({
+              skip: ((current || 1) - 1) * (pageSize || 20),
+              limit: pageSize || 20,
+              search: searchTerms.length > 0 ? searchTerms.join(' ') : undefined,
+            });
 
-          // 适配直接返回数组的情况
-          const dataItems = Array.isArray(response.data)
-            ? response.data
-            : response.data?.items || [];
-          const total = Array.isArray(response.data) ? dataItems.length : response.data?.total || 0;
+            console.log('MembershipType API response:', response);
 
-          return {
-            data: dataItems,
-            success: response.code === 200,
-            total: total,
-            current: current || 1,
-            pageSize: pageSize || 20,
-          };
+            if (response.code === 200 && response.data) {
+              // 适配直接返回数组的情况
+              const dataItems = Array.isArray(response.data)
+                ? response.data
+                : response.data?.items || [];
+
+              // 对于直接返回数组的API，我们使用数组长度作为总数
+              // 如果API支持分页，应该返回 { items: [], total: number } 格式
+              const total = Array.isArray(response.data)
+                ? dataItems.length
+                : response.data?.total || dataItems.length;
+
+              return {
+                data: dataItems,
+                success: true,
+                total: total,
+                current: current || 1,
+                pageSize: pageSize || 20,
+              };
+            } else {
+              console.error('API response error:', response);
+              return {
+                data: [],
+                success: false,
+                total: 0,
+              };
+            }
+          } catch (error) {
+            console.error('获取会员卡类型列表失败:', error);
+            return {
+              data: [],
+              success: false,
+              total: 0,
+            };
+          }
         }}
         rowKey="id"
         search={{

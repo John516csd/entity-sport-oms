@@ -9,16 +9,30 @@ export interface Membership {
   status: 'active' | 'expired' | 'cancelled' | 'revoked';
   purchased_at: string;
   expired_at: string;
-  total_sessions: number;
+  total_sessions?: number;
   remaining_sessions: number;
-  notes: string;
-  created_at: string;
-  updated_at: string;
+  notes?: string;
+  created_at?: string;
+  updated_at?: string;
   // 兼容性字段
   user_name?: string;
   user_phone?: string;
   type_name?: string;
   revoke_reason?: string;
+  // 新增嵌套对象字段，匹配实际API响应
+  type?: {
+    id: number;
+    name: string;
+    total_sessions: number;
+    validity_days: number;
+    max_leave_count: number;
+    max_leave_duration: number;
+  };
+  user?: {
+    uid: string;
+    username: string;
+    phone: string | null;
+  };
 }
 
 /** 会员卡列表查询参数 */
@@ -38,8 +52,10 @@ export interface MembershipListParams {
 
 /** 会员卡列表响应结果 */
 export interface MembershipListResult {
-  total: number;
   memberships: Membership[];
+  total: number;
+  skip: number;
+  limit: number;
 }
 
 /** 会员卡列表结果 */

@@ -30,8 +30,10 @@ const MembershipIssueForm: React.FC<MembershipIssueFormProps> = ({
   const fetchMembershipTypes = async () => {
     try {
       const res = await getMembershipTypes();
+      console.log('MembershipTypes API response in form:', res);
       if (res.code === 200 && res.data) {
         const items = Array.isArray(res.data) ? res.data : res.data.items || [];
+        console.log('Processed membership types:', items);
         setMembershipTypes(items);
       }
     } catch (error) {
@@ -82,10 +84,10 @@ const MembershipIssueForm: React.FC<MembershipIssueFormProps> = ({
         request={async (params) => {
           try {
             const res = await getUserOptions(params.keyWords);
-            if (res.code === 200 && res.data) {
+            if ((res.code === 200 || res.success === true) && res.data) {
               // 解析API返回的数据格式
               const userData = res.data as UserListResult;
-              const users = userData.items || [];
+              const users = userData.users || userData.items || [];
 
               return users.map((user: User) => ({
                 label: `${user.name} (${user.phone})`,

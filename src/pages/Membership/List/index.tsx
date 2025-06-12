@@ -26,12 +26,16 @@ const MembershipList: React.FC = () => {
   const fetchMembershipTypes = async () => {
     try {
       const response = await getMembershipTypes();
+      console.log('MembershipTypes API response in list:', response);
       if (response.code === 200 && response.data) {
-        const items = Array.isArray(response.data) ? response.data : response.data?.items || [];
+        const items = Array.isArray(response.data)
+          ? response.data
+          : (response.data as any)?.items || [];
+        console.log('Processed membership types in list:', items);
 
         // Create a mapping of type_id to name
         const typeMap: Record<string | number, string> = {};
-        items.forEach((item) => {
+        items.forEach((item: any) => {
           if (item && item.id) {
             typeMap[item.id] = item.name || `类型 ${item.id}`;
           }
@@ -104,7 +108,15 @@ const MembershipList: React.FC = () => {
     try {
       const response = await getMembership(id);
       if (response.code === 200 && response.data) {
-        setViewingMembership(response.data);
+        // 处理详情数据，将嵌套对象扁平化
+        const membershipData = {
+          ...response.data,
+          user_name: response.data.user?.username || response.data.user_name,
+          user_phone: response.data.user?.phone || response.data.user_phone,
+          type_name: response.data.type?.name || response.data.type_name,
+          total_sessions: response.data.type?.total_sessions || response.data.total_sessions,
+        };
+        setViewingMembership(membershipData);
         setViewModalVisible(true);
       } else {
         message.error('获取会员卡详情失败');
@@ -155,10 +167,12 @@ const MembershipList: React.FC = () => {
         try {
           const response = await getMembershipTypes();
           if (response.code === 200 && response.data) {
-            const items = Array.isArray(response.data) ? response.data : response.data?.items || [];
+            const items = Array.isArray(response.data)
+              ? response.data
+              : (response.data as any)?.items || [];
 
             // Return options directly from the API response
-            return items.map((item) => ({
+            return items.map((item: any) => ({
               label: item.name,
               value: String(item.id), // Always convert ID to string
             }));
@@ -437,17 +451,22 @@ const MembershipList: React.FC = () => {
             const response = await getMemberships(requestParams);
             console.log('API response:', response);
 
-            const dataItems = Array.isArray(response.data)
-              ? response.data
-              : response.data?.items || [];
-            const total = Array.isArray(response.data)
-              ? dataItems.length
-              : response.data?.total || 0;
+            // 正确提取数据：API返回的是 { data: { memberships: [...], total: number } }
+            const responseData = response.data;
+            const dataItems = responseData?.memberships || [];
+            const total = responseData?.total || 0;
 
-            // Add membership type name information to each item if needed
+            // 处理数据，将嵌套的 type 和 user 对象扁平化为兼容字段
             const processedItems = dataItems.map((item) => {
-              // Just return the item directly since the API now provides all needed fields
-              return item;
+              return {
+                ...item,
+                // 从嵌套的 user 对象中提取字段
+                user_name: item.user?.username || item.user_name,
+                user_phone: item.user?.phone || item.user_phone,
+                // 从嵌套的 type 对象中提取字段
+                type_name: item.type?.name || item.type_name,
+                total_sessions: item.type?.total_sessions || item.total_sessions,
+              };
             });
 
             return {

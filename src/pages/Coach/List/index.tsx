@@ -111,7 +111,7 @@ const CoachList: React.FC = () => {
       valueType: 'option',
       key: 'option',
       render: (_, record) => [
-        <a key="edit" onClick={() => handleEdit(record.id)}>
+        <a key="edit" onClick={() => handleEdit(String(record.id))}>
           编辑
         </a>,
         <Popconfirm
@@ -123,7 +123,7 @@ const CoachList: React.FC = () => {
               <p>确定要删除教练 &quot;{record.name}&quot; 吗?</p>
             </div>
           }
-          onConfirm={() => handleDelete(record.id)}
+          onConfirm={() => handleDelete(String(record.id))}
           okText="确定删除"
           cancelText="取消"
           okButtonProps={{ danger: true }}
@@ -154,7 +154,7 @@ const CoachList: React.FC = () => {
           });
 
           return {
-            data: response.data?.items || [],
+            data: response.data?.coaches || response.data?.items || [],
             success: response.code === 200,
             total: response.data?.total || 0,
             current: response.data?.page || 1,

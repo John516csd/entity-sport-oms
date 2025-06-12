@@ -1,4 +1,9 @@
-import { getSystemSettings, SystemSettings, updateSystemSettings } from '@/services/settings';
+import {
+  getSystemSettings,
+  SystemSettings,
+  updateSystemSettings,
+  transformSettingsArrayToObject,
+} from '@/services/settings';
 import { PageContainer } from '@ant-design/pro-components';
 import { useRequest } from 'ahooks';
 import { Button, Card, Form, Input, InputNumber, message, Space, TimePicker } from 'antd';
@@ -13,12 +18,19 @@ const Settings: React.FC = () => {
     manual: false,
     onSuccess: (result) => {
       if (result.code === 200 && result.data) {
+        // 将数组格式转换为对象格式
+        const settingsData = transformSettingsArrayToObject(result.data.settings);
+
         // 设置表单初始值
-        const { business_hours, ...rest } = result.data;
+        const { business_hours, cancellation_policy, ...rest } = settingsData;
         form.setFieldsValue({
           ...rest,
-          business_hours_start: business_hours.start ? moment(business_hours.start, 'HH:mm') : null,
-          business_hours_end: business_hours.end ? moment(business_hours.end, 'HH:mm') : null,
+          business_hours_start: business_hours?.start
+            ? moment(business_hours.start, 'HH:mm')
+            : null,
+          business_hours_end: business_hours?.end ? moment(business_hours.end, 'HH:mm') : null,
+          hours_before: cancellation_policy?.hours_before,
+          refund_percentage: cancellation_policy?.refund_percentage,
         });
       }
     },
@@ -65,13 +77,16 @@ const Settings: React.FC = () => {
   // 重置表单
   const handleReset = () => {
     if (data?.data) {
-      const { business_hours, ...rest } = data.data;
+      // 将数组格式转换为对象格式
+      const settingsData = transformSettingsArrayToObject(data.data.settings);
+      const { business_hours, cancellation_policy, ...rest } = settingsData;
+
       form.setFieldsValue({
         ...rest,
-        business_hours_start: business_hours.start ? moment(business_hours.start, 'HH:mm') : null,
-        business_hours_end: business_hours.end ? moment(business_hours.end, 'HH:mm') : null,
-        hours_before: data.data.cancellation_policy.hours_before,
-        refund_percentage: data.data.cancellation_policy.refund_percentage,
+        business_hours_start: business_hours?.start ? moment(business_hours.start, 'HH:mm') : null,
+        business_hours_end: business_hours?.end ? moment(business_hours.end, 'HH:mm') : null,
+        hours_before: cancellation_policy?.hours_before,
+        refund_percentage: cancellation_policy?.refund_percentage,
       });
     } else {
       form.resetFields();
@@ -81,13 +96,16 @@ const Settings: React.FC = () => {
   useEffect(() => {
     // 初次加载时设置默认值
     if (data?.data) {
-      const { business_hours, cancellation_policy, ...rest } = data.data;
+      // 将数组格式转换为对象格式
+      const settingsData = transformSettingsArrayToObject(data.data.settings);
+      const { business_hours, cancellation_policy, ...rest } = settingsData;
+
       form.setFieldsValue({
         ...rest,
-        business_hours_start: business_hours.start ? moment(business_hours.start, 'HH:mm') : null,
-        business_hours_end: business_hours.end ? moment(business_hours.end, 'HH:mm') : null,
-        hours_before: cancellation_policy.hours_before,
-        refund_percentage: cancellation_policy.refund_percentage,
+        business_hours_start: business_hours?.start ? moment(business_hours.start, 'HH:mm') : null,
+        business_hours_end: business_hours?.end ? moment(business_hours.end, 'HH:mm') : null,
+        hours_before: cancellation_policy?.hours_before,
+        refund_percentage: cancellation_policy?.refund_percentage,
       });
     }
   }, [data, form]);
